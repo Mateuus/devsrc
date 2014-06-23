@@ -5486,7 +5486,8 @@ void obj_Player::DrawLabel()
 
 	//#ifndef FINAL_BUILD
 	// draw player CustomerID/gamertag for admins
-	if(gUserProfile.ProfileData.isDevAccount)
+	//if(gUserProfile.ProfileData.isDevAccount)
+	if(!NetworkLocal && gUserProfile.ProfileData.isDevAccount && Keyboard->IsPressed(kbsLeftAlt))
 	{
 		float dist = (gCam - GetPosition()).Length();
 		float distx = (gCam - GetPosition()).x;
