@@ -1342,7 +1342,7 @@ static void startGame(const CUpdater& updater)
   updater.gUserProfile.CreateAuthToken(token);
 
   char GAME_START_PARAM[2048];
-  sprintf(GAME_START_PARAM, "-WZUDKTYZa %s -WZTHAuth \"%s\"", __r3dCmdLine, token);
+  sprintf(GAME_START_PARAM, "-UDBRASILMTs %s -UDBRAuth \"%s\"", __r3dCmdLine, token);
   if(updater.surveyLinkOut_.length() > 0) {
     sprintf(GAME_START_PARAM + strlen(GAME_START_PARAM), " -survey \"%s\"", updater.surveyLinkOut_.c_str());
   }

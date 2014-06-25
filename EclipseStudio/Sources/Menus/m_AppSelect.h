@@ -9,7 +9,18 @@ class Menu_AppSelect : public MenuLayer
 	START_MENU_ENUMS
 
 		bUpdateDB,
+		bStartGamePublic,
+		bStartGameSVN,
 
+		bStartLevelEditor,
+		bStartParticleEditor,
+		bStartPhysicsEditor,
+		bStartCharacterEditor,
+
+		bQuit
+
+		/*
+		bUpdateDB,
 		bStartLevelEditor,
 		bStartParticleEditor,
 		bStartPhysicsEditor,
@@ -17,6 +28,7 @@ class Menu_AppSelect : public MenuLayer
 
 		bStartGamePublic,
 		bQuit
+		*/
 	};
 
   protected:	

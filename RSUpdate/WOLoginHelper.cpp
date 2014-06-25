@@ -225,6 +225,6 @@ void CLoginHelper::CreateLoginToken(char* token) const
 	s2 = passwd;
 	s2.base64Encode("utf-8");
 
-	sprintf(token, "-loginallright4545 \"@%s\" -pwdfdfdfdallrigh \"@%s\"", s1.getAnsi(), s2.getAnsi());
+	sprintf(token, "-loginudbrasil157mts \"@%s\" -pwdudbrasilpwdmts \"@%s\"", s1.getAnsi(), s2.getAnsi());
 	return;
 }

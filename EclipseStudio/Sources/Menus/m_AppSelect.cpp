@@ -121,7 +121,7 @@ int Menu_AppSelect::DoModal()
 				for (int i=0;i<R3D_ARRAYSIZE(BNames1);i++)
 					if (imgui_Button(r3dRenderer->ScreenW/2-(280*R3D_ARRAYSIZE(BNames1))/2+280*i, r3dRenderer->ScreenH/2 - 30,270, 30,BNames1[i], 0)) 
 						released_id = bUpdateDB+i;*/
-				const static char *BNames1[] = {"Update DB", "Game (Public Server)", "Game (DEV Server)" };
+                const static char *BNames1[] = {"Update DB", "Game (Public Server)", "Game (DEV Server)" };
 
 				for (int i=0;i<R3D_ARRAYSIZE(BNames1);i++)
 					if (imgui_Button(r3dRenderer->ScreenW/2-(210*R3D_ARRAYSIZE(BNames1))/2+210*i, r3dRenderer->ScreenH/2 - 30,200, 30,BNames1[i], 0)) 
