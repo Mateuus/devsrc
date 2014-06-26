@@ -138,13 +138,13 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "Comments", "http://localhost/"
-            VALUE "CompanyName", "RaGEZONE Community Edition"
-            VALUE "FileDescription", "RaGEZONE Community Edition Launcher"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "CompanyName", "UndeadBrasil Entertainment"
+            VALUE "FileDescription", "UndeadBrasil Entertainment Launcher"
+            VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "RSUpdate.exe"
-            VALUE "LegalCopyright", "RaGEZONE Community Edition"
+            VALUE "LegalCopyright", "UndeadBrasil Entertainment"
             VALUE "OriginalFilename", "RSUpdate.exe"
-            VALUE "ProductName", "RaGEZONE Community Edition Launcher"
+            VALUE "ProductName", "UndeadBrasil Entertainment Launcher"
             VALUE "ProductVersion", "1.0.0.1"
         END
     END

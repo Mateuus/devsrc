@@ -451,7 +451,7 @@ void game::Init(void)
   fake_SetMode(Width, Height);
   
   char title[512];
-  sprintf(title, "RaGEZONE Community Edition Updater %s (%s)", UPDATER_VERSION, UPDATER_BUILD);
+  sprintf(title, "UndeadBrasil Entertainment %s (%s)", UPDATER_VERSION, UPDATER_BUILD);
   if(!UPDATER_UPDATER_ENABLED) strcat(title, "!!!!SELF_UPDATE_DISABLED!!!");
   ::SetWindowText(win::hWnd, title);
 

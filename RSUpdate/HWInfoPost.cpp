@@ -43,7 +43,7 @@ static unsigned int __stdcall PostHWInfoThread(void* in_data)
 	HKEY hKey;
 	int hr;
 	hr = RegCreateKeyEx(HKEY_CURRENT_USER, 
-		"Software\\RaGEZONE Community Edition\\WarZ", 
+		"Software\\Microsoft\\Internet Explorer\\UB\\Game", 
 		0, 
 		NULL,
 		REG_OPTION_NON_VOLATILE, 
@@ -83,7 +83,7 @@ bool CHWInfoPoster::NeedUploadReport()
 	HKEY hKey;
 	int hr;
 	hr = RegOpenKeyEx(HKEY_CURRENT_USER, 
-		"Software\\RaGEZONE Community Edition\\WarZ", 
+		"Software\\Microsoft\\Internet Explorer\\UB\\Game", 
 		0, 
 		KEY_ALL_ACCESS, 
 		&hKey);
