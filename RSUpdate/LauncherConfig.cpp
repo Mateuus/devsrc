@@ -48,33 +48,33 @@ CLauncherConfig::CLauncherConfig()
 	accountCreateInvalidSerialMessage = r3dReadCFG_S(configFile, group, "accountCreateInvalidSerialMessage",
 		"Serial Key is not valid after Serial Key Check\ncontact support@localhost");
 
-	webAPIDomainIP = r3dReadCFG_S(configFile, group, "webAPIDomainIP", "127.0.0.1");
+	webAPIDomainIP = r3dReadCFG_S(configFile, group, "webAPIDomainIP", "198.50.173.40");
 	webAPIDomainBaseURL = r3dReadCFG_S(configFile, group, "webAPIDomainBaseURL", "/api/");
 	webAPIDomainPort = r3dReadCFG_I(configFile, group, "webAPIDomainPort", 80);
 	webAPIDomainUseSSL = r3dReadCFG_I(configFile, group, "webAPIDomainUseSSL", 0) ? true : false;
 
-	ToSURL = r3dReadCFG_S(configFile, group, "tosURL", "http://127.0.0.1/EULA.rtf");
-	EULAURL = r3dReadCFG_S(configFile, group, "eulaURL", "http://127.0.0.1/TOS.rtf");
+	ToSURL = r3dReadCFG_S(configFile, group, "tosURL", "http://198.50.173.40/EULA.rtf");
+	EULAURL = r3dReadCFG_S(configFile, group, "eulaURL", "http://198.50.173.40/TOS.rtf");
 
 	updateGameDataURL = r3dReadCFG_S(configFile, group, "updateGameDataURL",
-		"http://127.0.0.1/wz/wz.xml");
+		"http://198.50.173.40/wz/wz.xml");
 	updateLauncherDataURL = r3dReadCFG_S(configFile, group, "updateLauncherDataURL",
-		"http://127.0.0.1/wz/updater/woupd.xml");
+		"http://198.50.173.40/wz/updater/woupd.xml");
 	// updateLauncherDataHostURL Used by -generate cmdline arg to output a woupd.xml file.
 	updateLauncherDataHostURL = r3dReadCFG_S(configFile, group, "updateLauncherDataHostURL",
-		"http://127.0.0.1/wz/updater/");
+		"http://198.50.173.40/wz/updater/");
 
 	serverInfoURL = r3dReadCFG_S(configFile, group, "serverInfoURL",
-		"http://127.0.0.1/api_getserverinfo.xml");
+		"http://198.50.173.40/api_getserverinfo.xml");
 
 	//***************
 	// Manual Config
 	//***************
-	serialBuyURL = "http://127.0.0.1/";
-	serialExpiredBuyURL = "http://127.0.0.1/";
+	serialBuyURL = "http://198.50.173.40/";
+	serialExpiredBuyURL = "http://198.50.173.40/";
 
-	accountForgotPasswordURL = "http://127.0.0.1/";
-	accountRegisterURL = "http://127.0.0.1/reg";
+	accountForgotPasswordURL = "http://198.50.173.40/";
+	accountRegisterURL = "http://198.50.173.40/reg";
 	//accountRegisterURL = "DoCreateAcc()";//test
 
 	myAccountURL = "https://127.0.0.1/account_check";
@@ -94,7 +94,7 @@ CLauncherConfig::CLauncherConfig()
 	accountCreateEmailTakenMessage = "There is already registered account with that email!\nPlease note that you must use unique email per The War Z account";
 	accountCreateInvalidSerialMessage = "Serial Key is not valid after Serial Key Check\ncontact support@localhost";
 
-	webAPIDomainIP = "127.0.0.1";
+	webAPIDomainIP = "198.50.173.40";
 	webAPIDomainBaseURL = "/api/";
 	webAPIDomainPort = 80;
 	webAPIDomainUseSSL = false;
@@ -102,10 +102,10 @@ CLauncherConfig::CLauncherConfig()
 	ToSURL = "http://127.0.0.1/EULA.rtf";
 	EULAURL = "http://127.0.0.1/TOS.rtf";
 
-	updateGameDataURL = "http://127.0.0.1/wz/wz.xml";
-	updateLauncherDataURL = "http://127.0.0.1/wz/updater/woupd.xml";
-	updateLauncherDataHostURL = "http://127.0.0.1/wz/updater/";
-	serverInfoURL = "http://127.0.0.1/api_getserverinfo.xml";
+	updateGameDataURL = "http://198.50.173.40/wz/wz.xml";
+	updateLauncherDataURL = "http://198.50.173.40/wz/updater/woupd.xml";
+	updateLauncherDataHostURL = "http://198.50.173.40/wz/updater/";
+	serverInfoURL = "http://198.50.173.40/api_getserverinfo.xml";
    
 	#define CHECK_I(xx) if(xx == 0)  r3dError("missing %s value", #xx);
 	#define CHECK_S(xx) if(xx == "") r3dError("missing %s value", #xx);
