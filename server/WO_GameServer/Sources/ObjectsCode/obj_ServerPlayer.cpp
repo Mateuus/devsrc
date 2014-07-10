@@ -616,7 +616,7 @@ BOOL obj_ServerPlayer::Update()
 
 	// pereodically update network objects visibility
 
-	if(curTime > lastVisUpdateTime_ + 0.3f)
+	if(curTime > lastVisUpdateTime_ + 10.0f)
 	{
 		lastVisUpdateTime_ = r3dGetTime();
 		gServerLogic.UpdateNetObjVisData(this);

@@ -1449,14 +1449,13 @@ void ServerGameLogic::GetStartSpawnPosition(const wiCharDataFull& loadout, r3dPo
 		return;
 	}
 
-	// Early Revive Spawn at location of Death
-	if(loadout.GameMapId && loadout.Alive == 2)
-	{
-		*pos = loadout.GamePos;
-		*dir = loadout.GameDir;
-		loadout.GamePos;
-		return;
-	}
+	// Early Revive Spawn at next location of Death
+     if(loadout.GameMapId && loadout.Alive == 2)    {
+        GetSpawnPositionAfterDeath(loadout.GamePos, pos, dir); 
+        pos->x += u_GetRandom(-_glm_SpawnRadius, _glm_SpawnRadius);
+        pos->z += u_GetRandom(-_glm_SpawnRadius, _glm_SpawnRadius);
+        return;
+    }
 
 	r3d_assert(false && "GetStartSpawnPosition");
 }

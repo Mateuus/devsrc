@@ -3308,7 +3308,7 @@ void obj_Player::UpdateLocalPlayerMovement()
 	// IF PLAYER IS FAST LOAD ON PLAYER CANT MOVE 12sec because fastload problem.
 	// wait 12 secs for fastload load building around player.
    // prevPos2 = GetPosition();
-	if (g_FastLoad->GetBool() && r3dGetTime() > gClientLogic().localPlayerConnectedTime + 12 && gClientLogic().localPlayer_ == this)
+	if (g_FastLoad->GetBool() && r3dGetTime() > gClientLogic().localPlayerConnectedTime + 1 && gClientLogic().localPlayer_ == this)
 	  controller->Move(vel * TimePassed, 0.5f);
 	
     if (!g_FastLoad->GetBool())

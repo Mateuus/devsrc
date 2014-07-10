@@ -142,7 +142,7 @@ void PlayGameServer()
   
   while(1) 
   {
-    ::Sleep(10);		// limit to 100 FPS
+    ::Sleep(20);		// limit to 100 FPS
     
     r3dEndFrame();
     r3dStartFrame();
