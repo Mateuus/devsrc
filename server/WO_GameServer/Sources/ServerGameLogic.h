@@ -138,7 +138,7 @@ virtual	void		OnNetData(DWORD peerId, const r3dNetPacketHeader* packetData, int 
 	 DEFINE_PACKET_FUNC(PKT_C2S_JoinGameReq);
 	 DEFINE_PACKET_FUNC(PKT_C2S_StartGameReq);
 	 DEFINE_PACKET_FUNC(PKT_C2S_Temp_Damage);
-	  DEFINE_PACKET_FUNC(PKT_C2S_TradeRequest);
+	  //DEFINE_PACKET_FUNC(PKT_C2S_TradeRequest);
 	 DEFINE_PACKET_FUNC(PKT_C2C_ChatMessage);
 	 DEFINE_PACKET_FUNC(PKT_S2C_SendGroupInvite);
 	  DEFINE_PACKET_FUNC(PKT_S2C_ReceivedGroupInvite);

@@ -114,7 +114,7 @@ static	int		GetMoveDirFromAcceleration(const r3dPoint3D& accel);
 
 	  // misc ones
 	  int		turnins[5];
-	   int		hands[1];
+	   int		hands[4];
 	  int		grenades_tps[20];
 	  int		grenades_fps[20];
 	  //int		bombs_tps[20];

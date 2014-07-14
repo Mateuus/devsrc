@@ -234,6 +234,7 @@ struct wiCharDataFull
 	int		GameMapId;
 char		fromgamertag[128];
 char		groupgamertag[128];
+    bool isTradeReq;
 	bool isInvite;
 	bool isVisible;
 	bool isGroupShow;
@@ -397,6 +398,21 @@ class CClientUserProfile : public CUserProfile
 	int		ApiFriendAddAns(DWORD friendId, bool allow);
 	int		ApiFriendRemove(DWORD friendId);
 	int		ApiFriendGetStats(DWORD friendId);
+
+	/*	// Transactions
+	int tscount;
+	struct TSEntry_s
+	{
+		char type;
+		char time;
+		uint32_t  itemID;
+		float  amount;
+		float  balance;
+		int  id;
+	};
+      std::vector<TSEntry_s> m_tsData; */
+	
+	// leaderboard
 	
 	// leaderboard
 	struct LBEntry_s

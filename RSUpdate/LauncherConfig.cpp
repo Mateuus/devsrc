@@ -13,7 +13,7 @@ CLauncherConfig::CLauncherConfig()
 	serialExpiredBuyURL = "http://localhost/buy?ref=WarE";
 
 	accountForgotPasswordURL = "https://localhost/account_check";
-	accountRegisterURL = "https://localhost/account_register";
+	accountRegisterURL = "http://undeadbrasil.com/index.php?pagina=cadastro";
 
 	myAccountURL = "https://localhost/account_check";
 	forumsURL =    "http://localhost/forum";

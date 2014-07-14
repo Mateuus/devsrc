@@ -67,11 +67,12 @@
 #include "..\..\ui\HUD_EditorGame.h"
 #include "..\..\ui\FrontEndShared.h"
 #include "..\..\ui\HUDPause.h"
-//#include "..\..\ui\HUDTrade.h"
+#include "..\..\ui\HUDTrade.h"
 #include "..\..\ui\HUDActionUI.h"
 #include "..\..\ui\HUDAttachments.h"
 #include "..\..\ui\HUDGeneralStore.h"
 #include "..\..\ui\HUDVault.h"
+
 
 extern HUDDisplay*	hudMain;
 extern HUDPause*	hudPause;
@@ -79,7 +80,8 @@ extern HUDAttachments*	hudAttm;
 extern HUDActionUI*	hudActionUI;
 extern HUDGeneralStore*	hudGeneralStore;
 extern HUDVault* hudVault;
-//extern HUDTrade* hudTrade;
+extern HUDTrade* hudTrade;
+
 //HUDTrade* hudTrade = NULL;
 extern 	PlayerStateVars_s CurrentRig;
 //float m_Stamina = m_Stamina1;
@@ -1063,7 +1065,7 @@ BOOL obj_Player::Load(const char *fname)
 	PlayerState	= PLAYER_IDLE;
 	PlayerMoveDir   = 0;
 	// we pack both vars into single byte in PKT_C2C_MoveRel.state, so check for overflow
-	//COMPILE_ASSERT(PLAYER_NUM_STATES <= 0xF);
+	//COMPILE_ASSERT(PLAYER_NUM_STATES <= 0xF); //MateuusEdit
 	COMPILE_ASSERT(CUberData::ANIMDIR_COUNT <= 0xF);
 
 	m_HitMarkerFadeout = 0;
@@ -1313,6 +1315,15 @@ BOOL obj_Player::OnDestroy()
 		SoundSys.Stop(m_sndSniperExhale); SoundSys.Release(m_sndSniperExhale);
 		SoundSys.Stop(m_sndVehicleDrive); SoundSys.Release(m_sndVehicleDrive);
 	}
+
+	if (hudTrade)
+    {
+        if (hudTrade->plr == this)
+        {
+            hudTrade->plr = NULL;
+            hudTrade->Deactivate();
+        }
+    }
 
 	if(hudMain)
 	{
@@ -1912,7 +1923,11 @@ void obj_Player::CheckFireWeapon()
 
 	r3d_assert(NetworkLocal);
 
-	if (bSwim || bSwimShift || isInVehicle())
+	//fix atirar nadando
+	if (bSwim || bSwimShift)
+		return;
+
+	if (isInVehicle())
 		return;
 
 	VMPROTECT_BeginMutation("obj_Player::CheckFireWeapon");
@@ -2315,11 +2330,11 @@ void obj_Player::CheckFireWeapon()
 		recoil *= GPP->c_fSpreadRecoilMod_Running;
 		spread *= GPP->c_fSpreadRecoilMod_Running;
 	}
-	//if(playerMoving)
-	//{
-	//	recoil *= GPP->c_fSpreadRecoilMod_Moving;
-	//	spread *= GPP->c_fSpreadRecoilMod_Moving;
-	//}
+	if(playerMoving) //MateuusEdit
+	{
+	    recoil *= GPP->c_fSpreadRecoilMod_Moving;
+		spread *= GPP->c_fSpreadRecoilMod_Moving;
+	}
 
 	/*if(wpn->getCategory() == storecat_SNP && !m_isAiming)
 	{
@@ -2792,6 +2807,8 @@ void obj_Player::DoDeath(int networdIDKiller, bool forced_by_server, STORE_CATEG
 			hudGeneralStore->Deactivate();
 		if(hudVault && hudVault->isActive())
 			hudVault->Deactivate();	
+		if(hudTrade && hudTrade->isActive())
+            hudTrade->Deactivate();
 
 		g_camera_mode->SetInt(0);
 		UpdateLoadoutSlot(CurLoadout); // reload meshes
@@ -3122,7 +3139,7 @@ void obj_Player::StartJump()
 	}
 
 	uberAnim_->StartJump();
-	JumpVelocity  = 18;
+	JumpVelocity  = 17;//MateuusEdit
 
 	JumpStartTime = r3dGetTime() + uberAnim_->jumpStartTime;
 
@@ -4241,7 +4258,7 @@ void obj_Player::UpdateActionUI()
 	R3DPROFILE_FUNCTION("UpdateActionUI");
 	r3d_assert(NetworkLocal);
 	if(hudMain==NULL || hudActionUI == NULL || hudPause == NULL ||
-		hudAttm == NULL || hudGeneralStore == NULL || hudVault == NULL /*|| hudTrade == NULL*/)
+		hudAttm == NULL || hudGeneralStore == NULL || hudVault == NULL || hudTrade == NULL)
 		return;
 
 	if(hudMain->isChatInputActive())
@@ -4254,6 +4271,9 @@ void obj_Player::UpdateActionUI()
 		return;
 	if(hudVault->isActive())
 		return;
+    if(hudTrade->isActive())
+        return;
+
 
 	if(bDead && hudActionUI->isActive())
 		hudActionUI->Deactivate();
@@ -4402,13 +4422,13 @@ void obj_Player::UpdateActionUI()
 				//hudActionUI->setCarInfo(0,0,0,0,0,false);
 				hudActionUI->setText(L"USE ITEM", m_Weapons[m_SelectedWeapon]->getConfig()->m_StoreNameW, InputMappingMngr->getKeyName(r3dInputMappingMngr::KS_INTERACT));
 			}
-			/*else if (plr->CurLoadout.isTrade)
-			hudActionUI->setText(L"Trade", L"Hold E To Trade Accept", InputMappingMngr->getKeyName(r3dInputMappingMngr::KS_INTERACT));*/
-			else // Trade
-			{
-				//hudActionUI->setCarInfo(0,0,0,0,0,false);
-				//hudActionUI->setText(L"Trade", L"Hold E To Trade", InputMappingMngr->getKeyName(r3dInputMappingMngr::KS_INTERACT));
-			}
+			else if (dropObj->Class->Name == "obj_Player")
+            {
+                obj_Player* plr = (obj_Player*)dropObj;
+                hudActionUI->setCarInfo(0,0,0,0,0,false);
+                hudActionUI->setText(L"Trade", L"Hold 'E' To Trade", InputMappingMngr->getKeyName(r3dInputMappingMngr::KS_INTERACT));
+            }
+
 			hudActionUI->enableRegularBlock();
 		}
 		if(hudActionUI->isActive())
@@ -4537,21 +4557,32 @@ void obj_Player::UpdateActionUI()
 							hudMain->updateSlotInfo(m_Weapons[m_SelectedWeapon]->m_BackpackIdx, wi.quantity);
 					}
 				}
-				/*else if (plr->CurLoadout.isTrade)
-				{
-				// Code
-				}*/
-				else 
-				{
-					/*obj_Player* tplr = (obj_Player*)dropObj;
-					char plrUserName[64]; tplr->GetUserName(plrUserName);
-					sprintf(hudTrade->tplrName,plrUserName);
-					hudTrade->Activate();*/
-					/*PKT_C2S_TradeRequest_s n;
-					n.netID = dropObj->GetNetworkID();
-					p2pSendToHost(this, &n, sizeof(n));
-					hudMain->showMessage(gLangMngr.getString("Send trade request successfully"));*/
-				}
+	            else if (dropObj->Class->Name == "obj_Player")
+                {
+                    obj_Player* plr = (obj_Player*)dropObj;
+                    if (plr->CurLoadout.isTradeReq)
+                    {
+                        PKT_C2S_TradeAccept_s n;
+                        n.netId = plr->GetNetworkID();
+                        p2pSendToHost(this,&n,sizeof(n));
+
+
+                        plr->CurLoadout.isTradeReq = false;
+                        hudTrade->plr = plr;
+                        if (hudTrade->plr)
+                            hudTrade->Activate();
+                    }
+                    else
+                    {
+                        PKT_C2S_TradeRequest_s n;
+                        n.netId = (int)plr->GetNetworkID();
+                        p2pSendToHost(this,&n,sizeof(n));
+                        char msg[128];
+                        char name[128]; plr->GetUserName(name);
+                        sprintf(msg,"Sent trade request to %s",name);
+                        hudMain->addChatMessage(0,"<trade>",msg,0);
+                    }
+                }
 
 				hudActionUI->Deactivate();
 			}
@@ -4602,6 +4633,38 @@ void obj_Player::AddBloodOnGround(const r3dPoint3D& posOfShot)
 				g_pDecalChief->Add( params );
 		}
 	}
+}
+
+void obj_Player::OnNetPacket(const PKT_C2S_TradeAccept_s& n)
+{
+    GameObject* obj = GameWorld().GetNetworkObject(n.netId);
+    if (obj && obj->Class->Name == "obj_Player")
+    {
+        obj_Player* plr = (obj_Player*)obj;
+        hudTrade->plr = plr;
+        hudTrade->Activate();
+    }
+}
+void obj_Player::OnNetPacket(const PKT_C2S_TradeOptoBack_s& n)
+{
+    hudTrade->OnNetPacket(n);
+}
+void obj_Player::OnNetPacket(const PKT_C2S_TradeSuccess_s& n)
+{
+    hudTrade->Deactivate();
+}
+void obj_Player::OnNetPacket(const PKT_C2S_TradeAccept2_s& n)
+{
+    hudTrade->setOppositeTradeIndicator(true);
+}
+void obj_Player::OnNetPacket(const PKT_C2S_TradeBacktoOp_s& n)
+{
+    hudTrade->OnNetPacket(n);
+}
+void obj_Player::OnNetPacket(const PKT_C2S_TradeCancel_s& n)
+{
+    hudTrade->Deactivate();
+    hudMain->addChatMessage(0,"<trade>","Other player cancelled trade",0);
 }
 
 void obj_Player::OnNetPacket(const PKT_S2C_MoveTeleport_s& n)
@@ -4915,6 +4978,21 @@ void obj_Player::OnNetPacket(const PKT_C2C_PlayerFired_s& n)
 	uberAnim_->StartRecoilAnim();
 }
 
+void obj_Player::OnNetPacket(const PKT_C2S_TradeRequest_s& n)
+{
+    GameObject* obj = GameWorld().GetNetworkObject((DWORD)n.netId);
+    if (obj && obj->Class->Name == "obj_Player")
+    {
+        obj_Player* plr = (obj_Player*)obj;
+        char msg[64];
+        char username[64];
+        plr->GetUserName(username);
+        sprintf(msg,"Trade requested by %s",username);
+        plr->CurLoadout.isTradeReq = true;
+        hudMain->addChatMessage(0,"<trade>",msg,0);
+    }
+}
+
 void obj_Player::OnNetPacket(const PKT_C2C_PlayerHitNothing_s& n)
 {
 }
@@ -5204,8 +5282,15 @@ case xxx: { \
 		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_S2C_BackpackAddNew);
 		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_S2C_BackpackModify);
 		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_S2C_SetPlayerReputation);
+		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeCancel);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeAccept);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeBacktoOp);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeAccept2);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeOptoBack);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeSuccess);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeRequest);
 	}
-
+  
 	return TRUE;
 }
 
@@ -8252,6 +8337,17 @@ bool obj_Player::ChangeBackpack(int slotFrom)
 	slot.BackpackID   = cfg->m_itemID;
 	slot.BackpackSize = cfg->m_maxSlots;
 	UpdateLoadoutSlot(slot);
+
+	// changed to a smaller backpack
+	if(n.BackpackSize > (BYTE)slot.BackpackSize)
+	{
+		// drop excessive items
+		for(int i = slot.BackpackSize; i < (int)n.BackpackSize; i++)
+		{
+			DropItem(i);
+		}
+	}
+
 
 	return true;
 }

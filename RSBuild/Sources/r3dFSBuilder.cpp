@@ -273,7 +273,24 @@ DWORD r3dFSBuilder::DetectFileFlags(const char* fname)
 	 pattern_match(fname, "d3d11x.dll") || 
 	 pattern_match(fname, "*.bmp") || 
      pattern_match(fname, "*.manifest") || 
-     pattern_match(fname, "crashrpt*.ini"))
+     pattern_match(fname, "crashrpt*.ini") ||
+	 pattern_match(fname, "*.ui") ||
+	 pattern_match(fname, "*.aht") ||
+	 pattern_match(fname, "*.ahc") ||
+	 pattern_match(fname, "*.hsb") ||
+	 pattern_match(fname, "*.id") ||
+	 pattern_match(fname, "*.env") ||
+	 pattern_match(fname, "*.mhe") ||
+	 pattern_match(fname, "*.msd") ||
+	 pattern_match(fname, "*.key") ||
+	 pattern_match(fname, "*.scd") ||
+	 pattern_match(fname, "*.uic") ||
+	 pattern_match(fname, "ahnrpt.ini") ||
+	 pattern_match(fname, "bldinfo.ini") ||
+	 pattern_match(fname, "Amazon.ini") ||
+	 pattern_match(fname, "BldInfo.ini") ||
+	 pattern_match(fname, "HSBGen.ini")
+	 )
   {
     return r3dFS_FileEntry::FLAG_EXTRACT;
   }

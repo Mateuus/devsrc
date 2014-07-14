@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="WarZ Game Server"
 	ProjectGUID="{32AD275B-9E09-431E-94D7-41780F91B239}"
 	RootNamespace="WarOnline"
@@ -53,7 +53,7 @@
 				EnableIntrinsicFunctions="true"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories=".\..\..\..\src\External\;.\..\..\..\src\External\PhysX\include;.\..\..\..\src\External\PhysX\PxTask\include;.\..\..\..\src\External\PhysX\PxFoundation;.\..\..\..\src\External\PhysX\PxFoundation\internal\include;.\..\..\..\src\External\PhysX\PhysXProfileSDK\sdk\include;.\..\..\..\src\External\PhysX\PhysXVisualDebuggerSDK\PVDCommLayer\Public;.\..\..\..\src\External\PhysX\PhysXAPI;.\..\..\..\src\External\PhysX\PhysXAPI\cloth;.\..\..\..\src\External\PhysX\PhysXAPI\geometry;.\..\..\..\src\External\PhysX\PhysXAPI\common;.\..\..\..\src\External\PhysX\GeomUtils\headers;.\..\..\..\src\External\PhysX\RepX/include;.\..\..\..\src\External\PhysX\RepXUpgrader/include;.\..\..\..\src\External\PhysX\PhysXAPI\characterkinematic;.\..\..\..\src\External\dxsdk\Include;.\Sources;.\..\..\..\src\EclipseStudio\Sources;.\..\..\..\src\eternity\include;.\..\..\..\src\GameEngine;.\..\..\..\src\External\ChilKat\Include;.\..\..\..\src\External\AutodeskNav\sdk\include;&quot;E:\a source\src\External\HShield\Include&quot;"
+				AdditionalIncludeDirectories=".\..\..\..\src\External\;.\..\..\..\src\External\PhysX\include;.\..\..\..\src\External\PhysX\PxTask\include;.\..\..\..\src\External\PhysX\PxFoundation;.\..\..\..\src\External\PhysX\PxFoundation\internal\include;.\..\..\..\src\External\PhysX\PhysXProfileSDK\sdk\include;.\..\..\..\src\External\PhysX\PhysXVisualDebuggerSDK\PVDCommLayer\Public;.\..\..\..\src\External\PhysX\PhysXAPI;.\..\..\..\src\External\PhysX\PhysXAPI\cloth;.\..\..\..\src\External\PhysX\PhysXAPI\geometry;.\..\..\..\src\External\PhysX\PhysXAPI\common;.\..\..\..\src\External\PhysX\GeomUtils\headers;E:\Undead\src\External\HShield\Include;.\..\..\..\src\External\PhysX\RepX/include;.\..\..\..\src\External\PhysX\RepXUpgrader/include;.\..\..\..\src\External\PhysX\PhysXAPI\characterkinematic;.\..\..\..\src\External\dxsdk\Include;.\Sources;.\..\..\..\src\EclipseStudio\Sources;.\..\..\..\src\eternity\include;.\..\..\..\src\GameEngine;.\..\..\..\src\External\ChilKat\Include;.\..\..\..\src\External\AutodeskNav\sdk\include;.\..\..\..\src\External\HShield\Include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;WO_SERVER"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"

@@ -92,6 +92,11 @@ class obj_ServerPlayer : public GameObject, INetworkHelper
 	float		deathTime;
 
 	void		DoDeath();
+	r3dPoint3D prevpos; 
+	r3dPoint3D tpos;
+	int TradeNums;
+	DWORD Tradetargetid;
+    wiInventoryItem TradeItems[72];
 	
 	float		lastTimeHit;
 	int		lastHitBodyPart;
@@ -176,8 +181,8 @@ public:
 	void		OnNetPacket(const PKT_C2C_Aura_s& n);
 	void		OnNetPacket(const PKT_C2S_PlayerEquipAttachment_s& n);
 	void		OnNetPacket(const PKT_C2S_PlayerRemoveAttachment_s& n);
-	void OnNetPacket(const PKT_C2C_CarPass_s& n);
-	void OnNetPacket(const PKT_C2S_PlayerState_s& n);
+	void		OnNetPacket(const PKT_C2C_CarPass_s& n);
+	void		OnNetPacket(const PKT_C2S_PlayerState_s& n);
 	void		OnNetPacket(const PKT_C2C_PlayerSwitchWeapon_s& n);
 	void		OnNetPacket(const PKT_C2C_PlayerUseItem_s& n);
 	void		OnNetPacket(const PKT_C2C_PlayerReload_s& n);
@@ -195,13 +200,29 @@ public:
 	void		OnNetPacket(const PKT_C2S_InventoryOp_s& n);
 	void		OnNetPacket(const PKT_C2S_DisconnectReq_s& n);
 	void		OnNetPacket(const PKT_C2S_UnloadClipReq_s& n); //Unload Clip
-	void OnNetPacket(const PKT_C2S_SendHelpCall_s& n);
-	void OnNetPacket(const PKT_C2S_HackShieldLog_s& n);
+	void		OnNetPacket(const PKT_C2S_SendHelpCall_s& n);
+	void		OnNetPacket(const PKT_C2S_HackShieldLog_s& n);
 	void		OnNetPacket(const PKT_C2S_FallingDamage_s& n);
-	void OnNetPacket(const PKT_C2C_PlayerCraftItem_s& n);
-	void OnNetPacket(const PKT_C2C_CarStatus_s& n);
+	void		OnNetPacket(const PKT_C2C_PlayerCraftItem_s& n);
+	void		OnNetPacket(const PKT_C2C_CarStatus_s& n);
 	void		OnNetPacket(const PKT_C2S_PlayerWeapDataRep_s& n);
-	void OnNetPacket(const PKT_C2S_WpnLog_s& n);
+	void		OnNetPacket(const PKT_C2S_WpnLog_s& n);
+	//MTrade
+	void 		OnNetPacket(const PKT_C2S_TradeRequest_s& n);
+	void 		OnNetPacket(const PKT_C2S_TradeAccept_s& n);
+	void		OnNetPacket(const PKT_C2S_TradeAccept2_s& n);
+	void		OnNetPacket(const PKT_C2S_TradeCancel_s& n);
+	void		OnNetPacket(const PKT_C2S_TradeBacktoOp_s& n);
+	void		OnNetPacket(const PKT_C2S_TradeOptoBack_s& n);
+	bool		isTradeAccept;
+	bool        isDestroy;
+	void        DoRemoveAllItems(obj_ServerPlayer* plr);
+	void        DoRemoveItems(int slotid);
+	void		DoTrade(obj_ServerPlayer* plr , obj_ServerPlayer* plr2);
+	bool		IsItemCanAddToInventory(const wiInventoryItem& wi1);
+	int		    TradeSlot[72]; // for check cheat engine;
+	//MTrade
+
 	void OnNetPacket(const PKT_C2S_ValidateEnvironment_s& n);
 	void OnNetPacket(const PKT_C2S_BulletValidateConfig_s& n);
 	void		RelayPacket(const DefaultPacket* packetData, int packetSize, bool guaranteedAndOrdered = true);

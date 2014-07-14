@@ -196,6 +196,28 @@ public:
 private:
 	int Result;
 };
+
+class CJobTradeLog : public CAsyncApiJob
+{
+
+
+  public:
+    CJobTradeLog(int customerid , int customerid2 , int loadoutid,int loadoutid2 ,const char* gmt ,const char* gmt2, int GameServerId , wiInventoryItem wi);
+    char reason[512];
+    int gamesid;
+    int customerid1 , customerid22 , loadoutid1 , loadoutid22 ;
+    char gmt1[512]; 
+    char gmt22[512];
+    wiInventoryItem item;
+
+
+    int        Exec();
+    void        OnSuccess();
+};
+
+
+
+
 class CJobHash : public CAsyncApiJob
 {
 public:
@@ -209,3 +231,4 @@ public:
 private:
 	int Result;
 };
+

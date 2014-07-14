@@ -1846,17 +1846,7 @@ void ServerGameLogic::ResetNetObjVisData(const obj_ServerPlayer* plr)
 		}
 	}
 }
-IMPL_PACKET_FUNC(ServerGameLogic, PKT_C2S_TradeRequest)
-{
-	GameObject* obj = GameWorld().GetNetworkObject(n.netID);
-	if(obj && obj->isObjType(OBJTYPE_Human))
-	{
-		obj_ServerPlayer* otherPlayer = (obj_ServerPlayer*)obj;
-		PKT_C2S_TradeRequestRead_s n1;
-		sprintf(n1.gamertag,otherPlayer->loadout_->Gamertag);
-		p2pSendToPeer(NULL, NULL, &n1, sizeof(n1));
-	}
-}
+
 IMPL_PACKET_FUNC(ServerGameLogic, PKT_C2S_Temp_Damage)
 {
 	obj_ServerPlayer* fromPlr = IsServerPlayer(fromObj);
@@ -3038,7 +3028,7 @@ int ServerGameLogic::ProcessWorldEvent(GameObject* fromObj, DWORD eventId, DWORD
 	{
 		DEFINE_PACKET_HANDLER(PKT_C2S_Temp_Damage);
 		DEFINE_PACKET_HANDLER(PKT_C2S_PlayerAcceptMission);
-		DEFINE_PACKET_HANDLER(PKT_C2S_TradeRequest);
+		//DEFINE_PACKET_HANDLER(PKT_C2S_TradeRequest);
 		DEFINE_PACKET_HANDLER(PKT_C2C_ChatMessage);
 		DEFINE_PACKET_HANDLER(PKT_S2C_SendGroupInvite);
 		DEFINE_PACKET_HANDLER(PKT_S2C_ReceivedGroupInvite);

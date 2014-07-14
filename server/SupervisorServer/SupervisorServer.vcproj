@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="SupervisorServer"
 	ProjectGUID="{32AD275B-2E08-431E-94D7-42781F91B239}"
 	RootNamespace="AlienGates"
@@ -50,7 +50,7 @@
 				Optimization="3"
 				EnableIntrinsicFunctions="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories=".\..\..\..\src\External\dxsdk\Include;.\..\..\..\src\External\PhysX\Foundation\include;.\..\..\..\src\External\PhysX\Physics\include;.\..\..\..\src\External\PhysX\PhysXLoader\include;.\..\..\..\src\External\PhysX\nxCharacter\include;.\..\..\..\src\External\PhysX\Cooking\include;.\Sources;.\..\..\..\src\eternity\include;.\..\..\..\src\External\ChilKat\Include"
+				AdditionalIncludeDirectories=".\..\..\..\src\External\HShield\Include;.\..\..\..\src\External\dxsdk\Include;.\..\..\..\src\External\PhysX\Foundation\include;.\..\..\..\src\External\PhysX\Physics\include;.\..\..\..\src\External\PhysX\PhysXLoader\include;.\..\..\..\src\External\PhysX\nxCharacter\include;.\..\..\..\src\External\PhysX\Cooking\include;.\Sources;.\..\..\..\src\eternity\include;.\..\..\..\src\External\ChilKat\Include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;WO_SERVER; DISABLE_PHYSX"
 				ExceptionHandling="1"
 				RuntimeLibrary="0"

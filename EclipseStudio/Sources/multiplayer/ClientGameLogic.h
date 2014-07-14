@@ -135,7 +135,7 @@ virtual	void		OnNetData(DWORD peerId, const r3dNetPacketHeader* packetData, int 
 	 DEFINE_PACKET_FUNC(PKT_S2C_ZombieAttack);
 	 DEFINE_PACKET_FUNC(PKT_S2C_KillPlayer);
 	 DEFINE_PACKET_FUNC(PKT_C2S_DisconnectReq);
-	  DEFINE_PACKET_FUNC(PKT_C2S_TradeRequestRead);
+	
 	 DEFINE_PACKET_FUNC(PKT_C2C_ChatMessage);
 	  DEFINE_PACKET_FUNC(PKT_S2C_CheatMsg);
 	    DEFINE_PACKET_FUNC(PKT_S2C_ReceivedGroupInvite);

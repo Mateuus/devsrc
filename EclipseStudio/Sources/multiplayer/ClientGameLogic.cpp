@@ -1006,16 +1006,7 @@ IMPL_PACKET_FUNC(ClientGameLogic, PKT_S2C_KillPlayer)
 	if(n.forced_by_server)
 		return;
 }
-IMPL_PACKET_FUNC(ClientGameLogic, PKT_C2S_TradeRequestRead)
-{
-	char text[64];
-	char* name;
-	sprintf(text,"received trade request from %s",n.gamertag);
-	hudMain->showMessage(gLangMngr.getString(text));
-	sprintf(name,n.gamertag);
-	obj_Player* plr = FindPlayer(name);
-	//plr->CurLoadout.isTrade = true;
-}
+
 IMPL_PACKET_FUNC(ClientGameLogic, PKT_C2S_DisconnectReq)
 {
 	//r3dOutToLog("PKT_C2S_DisconnectReq\n");
@@ -1047,7 +1038,7 @@ int ClientGameLogic::ProcessWorldEvent(GameObject* fromObj, DWORD eventId, DWORD
 		DEFINE_PACKET_HANDLER(PKT_C2S_ValidateConnectingPeer);
 		DEFINE_PACKET_HANDLER(PKT_C2C_PacketBarrier);
 		DEFINE_PACKET_HANDLER(PKT_C2S_DisconnectReq);
-		DEFINE_PACKET_HANDLER(PKT_C2S_TradeRequestRead);
+		
 		DEFINE_PACKET_HANDLER(PKT_S2C_JoinGameAns);
 		DEFINE_PACKET_HANDLER(PKT_S2C_ShutdownNote);
 		DEFINE_PACKET_HANDLER(PKT_S2C_SetGamePlayParams);

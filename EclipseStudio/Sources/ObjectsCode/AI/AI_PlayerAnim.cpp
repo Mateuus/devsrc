@@ -215,7 +215,10 @@ void CUberData::LoadLowerAnimations()
 	i[1] = AddAnimation("Crouch_Str_TurnIn", "Crouch_Str");
 
 	i = aid_.hands; // Punching System
-	i[0] = AddAnimation("FPS_Stand_Shooting_Mel_Hands_R_Punch"); // Punching System
+	i[0] = AddAnimation("FPS_Stand_Shooting_Mel_Hands_01");
+	i[1] = AddAnimation("FPS_Stand_Shooting_Mel_Hands_R_Punch");
+	i[2] = AddAnimation("FPS_Stand_Shooting_Mel_Hands_L_Hook");
+	i[3] = AddAnimation("FPS_Stand_Shooting_Mel_Hands_L_Jab");
 }
 
 void CUberData::LoadWeaponAnim(int (&wid)[AIDX_COUNT], int (&wid_fps)[AIDX_COUNT], const char* names[AIDX_COUNT])
@@ -1172,19 +1175,38 @@ void CUberAnim::SwitchToState(int PlayerState, int MoveDir)
 			if(a1 == -1)
 				a1 = aid.sprint[CUberData::ANIMDIR_Str];
 			break;
-		case PLAYER_SWIM:
-			a1 = aid.swim[MoveDir];
-					a2 = -1;
-				break;
-		break;
-		case PLAYER_SWIM_M:
+
+			                                  
+		case PLAYER_SWIM: //MateuusEdit
+			//a1 = aid.swim[MoveDir]; 
+			//a2 = -1;
+
+            a1 = aid.swimm[MoveDir];
+			a2 = wids[CUberData::AIDX_ProneBlend];
+			if(!CurrentWeapon)
+				a2 = -1;
+		    break;
+
+		case PLAYER_SWIM_M: //MateuusEdit
+
+			//a1 = aid.swimm[MoveDir];
+			//a2 = -1;
+
 			a1 = aid.swimm[MoveDir];
-			a2 = -1;
-		break;
-		case PLAYER_SWIM_F:
+			a2 = wids[CUberData::AIDX_ProneBlend];
+			if(!CurrentWeapon)
+				a2 = -1;
+		     break;
+
+		case PLAYER_SWIM_F: //MateuusEdit
+			//a1 = aid.swimf[MoveDir];
+			//a2 = -1;
+
 			a1 = aid.swimf[MoveDir];
-			a2 = -1;
-		break;
+			a2 = wids[CUberData::AIDX_ProneBlend];
+			if(!CurrentWeapon)
+			    a2 = -1;
+		     break;
 		}
 
 	if(a1 == -1 && !IsFPSMode()) {	
@@ -1930,7 +1952,7 @@ void CUberAnim::StartJump()
 
 void CUberAnim::StartHands()
 {
-	int id = anim.StartAnimation(data_->aid_.hands[0], 0, 0.0f, 1.0f, 0.1f); // Punching System
+	int id = anim.StartAnimation(data_->aid_.hands[4], 0, 0.0f, 1.0f, 0.1f); // Punching System
 	//anim.GetTrack(id)->fSpeed = 1.0f; // Punching System
 }
 

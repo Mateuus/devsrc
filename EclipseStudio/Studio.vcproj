@@ -1697,6 +1697,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\Sources\UI\HUDTrade.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Sources\UI\HUDTrade.h"
+					>
+				</File>
+				<File
 					RelativePath=".\Sources\UI\HUDVault.cpp"
 					>
 				</File>

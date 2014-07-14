@@ -216,6 +216,8 @@ void eventBrowseGamesJoin(r3dScaleformMovie* pMovie, const Scaleform::GFx::Value
 	void		OnBackpackGridSwapSuccess();
 	static	unsigned int WINAPI as_BackpackChangeThread(void* in_data);
 	void		OnBackpackChangeSuccess();
+	static unsigned int WINAPI as_TransactionsThread(void* in_data);
+    void OnTransactionsDataSuccess();
 
 	void OnBanPlayerSuccess();
 	static unsigned int WINAPI FrontendWarZ::as_BanPlayerThread(void* in_data);
