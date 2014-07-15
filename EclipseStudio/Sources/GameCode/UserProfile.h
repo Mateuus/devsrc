@@ -234,7 +234,6 @@ struct wiCharDataFull
 	int		GameMapId;
 char		fromgamertag[128];
 char		groupgamertag[128];
-    bool isTradeReq;
 	bool isInvite;
 	bool isVisible;
 	bool isGroupShow;
@@ -373,7 +372,6 @@ class CClientUserProfile : public CUserProfile
 	~CClientUserProfile();
 	
 	int		ApiGetItemsInfo();
-	
 	int		ApiBuyItem(int itemId, int buyIdx, __int64* out_InventoryID);
 
 	int		ApiCharCreate(const char* Gamertag, int Hardcore, int HeroItemID, int HeadIdx, int BodyIdx, int LegsIdx);
@@ -399,23 +397,6 @@ class CClientUserProfile : public CUserProfile
 	int		ApiFriendAddAns(DWORD friendId, bool allow);
 	int		ApiFriendRemove(DWORD friendId);
 	int		ApiFriendGetStats(DWORD friendId);
-	int     ApiGetTransactions();
-
-		// Transactions
-	int tscount;
-	struct TSEntry_s
-   {
-     float amount;
-     int itemID;
-   //int type;
-     char time[128];
-     char type[128];
-     int id;
-     float balance;
- };
-      std::vector<TSEntry_s> m_tsData; 
-	
-	// leaderboard
 	
 	// leaderboard
 	struct LBEntry_s

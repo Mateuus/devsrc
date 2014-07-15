@@ -3,7 +3,7 @@
 	function db_connect()
 	{
 		$db_user   = "sa";
-		$db_pass   = "Mts.27091995";
+		$db_pass   = "CD3187c8de4b0f3df43";
 		$db_dbname = "Undead";
 
 		$db_serverName     = "127.0.0.1, 1433";

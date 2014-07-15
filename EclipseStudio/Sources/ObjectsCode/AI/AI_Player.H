@@ -378,11 +378,11 @@ public:
 	void			 OnNetPacket(const PKT_C2C_Aura_s& n);
 	void			 OnNetPacket(const PKT_S2C_AddScore_s& n);
 	void			 OnNetPacket(const PKT_S2C_SetPlayerVitals_s& n);
-	void             OnNetPacket(const PKT_S2C_SetPlayerGroupID_s& n);
+	void OnNetPacket(const PKT_S2C_SetPlayerGroupID_s& n);
 	void			 OnNetPacket(const PKT_S2C_SetPlayerLoadout_s& n);
 	void			 OnNetPacket(const PKT_S2C_SetPlayerAttachments_s& n);
 	void			 OnNetPacket(const PKT_S2C_SetPlayerWorldFlags_s& n);
-	void			 OnNetPacket(const PKT_C2C_CarPass_s& n);
+		void			 OnNetPacket(const PKT_C2C_CarPass_s& n);
 	void			 OnNetPacket(const PKT_C2C_PlayerSwitchWeapon_s& n);
 	void			 OnNetPacket(const PKT_C2C_PlayerReadyGrenade_s& n);
 	void			 OnNetPacket(const PKT_C2C_PlayerThrewGrenade_s& n);
@@ -398,13 +398,6 @@ public:
 	void			 OnNetPacket(const PKT_S2C_BackpackAddNew_s& n);
 	void			 OnNetPacket(const PKT_S2C_BackpackModify_s& n);
 	void			 OnNetPacket(const PKT_S2C_SetPlayerReputation_s& n);
-	void             OnNetPacket(const PKT_C2S_TradeOptoBack_s& n);
-    void             OnNetPacket(const PKT_C2S_TradeRequest_s& n);
-    void             OnNetPacket(const PKT_C2S_TradeSuccess_s& n);
-    void             OnNetPacket(const PKT_C2S_TradeAccept2_s& n);
-    void             OnNetPacket(const PKT_C2S_TradeCancel_s& n);
-    void             OnNetPacket(const PKT_C2S_TradeBacktoOp_s& n);
-    void             OnNetPacket(const PKT_C2S_TradeAccept_s& n);
 
 	virtual void		UpdateTransform();
 

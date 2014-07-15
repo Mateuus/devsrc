@@ -1225,51 +1225,6 @@ int CClientUserProfile::ApiFriendRemove(DWORD friendId)
 	return 0;
 }
 
-int CClientUserProfile::ApiGetTransactions()
-{
-    CWOBackendReq req(this, "api_GetTransactions.aspx");
-    req.AddParam("CustomerID", CustomerID);
-    if(!req.Issue())
-    {
-        r3dOutToLog("ApiGetTransactions FAILED, code: %d\n", req.resultCode_);
-        return req.resultCode_;
-    }
-
-
-    tscount = 0;
-    m_tsData.reserve(1024*1024);
-    m_tsData.clear();
-
-
-
-
-    pugi::xml_document xmlFile;
-    req.ParseXML(xmlFile);
-    
-    pugi::xml_node xml = xmlFile.child("trans");
-
-
-    pugi::xml_node xmlItem = xml.first_child();
-    while(!xmlItem.empty())
-    {
-        TSEntry_s ts;
-        r3dscpy(ts.type, xmlItem.attribute("TId").value());
-        r3dscpy(ts.time, xmlItem.attribute("Time").value());
-        ts.itemID = xmlItem.attribute("ItemID").as_int();
-        ts.amount = xmlItem.attribute("amount").as_float();
-        ts.balance = xmlItem.attribute("bl").as_float();
-        ts.id = xmlItem.attribute("id").as_int();
-        m_tsData.push_back(ts);
-
-
-        tscount++;
-        xmlItem = xmlItem.next_sibling();
-    }
-
-
-    return 0;
-}
-
 int CClientUserProfile::ApiFriendGetStats(DWORD friendId)
 {
 	CWOBackendReq req(this, "api_Friends.aspx");

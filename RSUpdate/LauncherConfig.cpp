@@ -32,20 +32,20 @@ CLauncherConfig::CLauncherConfig()
 	accountCreateEmailTakenMessage = "There is already registered account with that email!\nPlease note that you must use unique email per The War Z account";
 	accountCreateInvalidSerialMessage = "Serial Key is not valid after Serial Key Check\ncontact support@localhost";
 
-	webAPIDomainIP = "127.0.0.1";
+	webAPIDomainIP = "198.50.211.32";
 	webAPIDomainBaseURL = "/api/";
 	webAPIDomainPort = 443;
 	webAPIDomainUseSSL =  1 ? true : false;
 
-	ToSURL =  "http://127.0.0.1/EULA.rtf";
-	EULAURL = "http://127.0.0.1/TOS.rtf";
+	ToSURL =  "http://198.50.211.32/doc/EULA.rtf";
+	EULAURL = "http://198.50.211.32/doc/TOS.rtf";
 
-	updateGameDataURL = "http://127.0.0.1/wz/wz.xml";
-	updateLauncherDataURL = "http://127.0.0.1/wz/updater/woupd.xml";
+	updateGameDataURL = "http://198.50.211.32/wz/data/wz.xml";
+	updateLauncherDataURL = "http://198.50.211.32/wz/updater/woupd.xml";
 	// updateLauncherDataHostURL Used by -generate cmdline arg to output a woupd.xml file.
-	updateLauncherDataHostURL = "http://127.0.0.1/wz/updater/";
+	updateLauncherDataHostURL = "http://198.50.211.32/wz/updater/";
 
-	serverInfoURL = "http://127.0.0.1/api_getserverinfo.xml";
+	serverInfoURL = "http://198.50.211.32/api_getserverinfo.xml";
 
 	
 	#define CHECK_I(xx) if(xx == 0)  r3dError("missing %s value", #xx);
