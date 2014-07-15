@@ -207,21 +207,6 @@ public:
 	void		OnNetPacket(const PKT_C2C_CarStatus_s& n);
 	void		OnNetPacket(const PKT_C2S_PlayerWeapDataRep_s& n);
 	void		OnNetPacket(const PKT_C2S_WpnLog_s& n);
-	//MTrade
-	void 		OnNetPacket(const PKT_C2S_TradeRequest_s& n);
-	void 		OnNetPacket(const PKT_C2S_TradeAccept_s& n);
-	void		OnNetPacket(const PKT_C2S_TradeAccept2_s& n);
-	void		OnNetPacket(const PKT_C2S_TradeCancel_s& n);
-	void		OnNetPacket(const PKT_C2S_TradeBacktoOp_s& n);
-	void		OnNetPacket(const PKT_C2S_TradeOptoBack_s& n);
-	bool		isTradeAccept;
-	bool        isDestroy;
-	void        DoRemoveAllItems(obj_ServerPlayer* plr);
-	void        DoRemoveItems(int slotid);
-	void		DoTrade(obj_ServerPlayer* plr , obj_ServerPlayer* plr2);
-	bool		IsItemCanAddToInventory(const wiInventoryItem& wi1);
-	int		    TradeSlot[72]; // for check cheat engine;
-	//MTrade
 
 	void OnNetPacket(const PKT_C2S_ValidateEnvironment_s& n);
 	void OnNetPacket(const PKT_C2S_BulletValidateConfig_s& n);
