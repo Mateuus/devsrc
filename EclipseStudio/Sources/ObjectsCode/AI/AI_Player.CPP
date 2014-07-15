@@ -67,7 +67,7 @@
 #include "..\..\ui\HUD_EditorGame.h"
 #include "..\..\ui\FrontEndShared.h"
 #include "..\..\ui\HUDPause.h"
-//#include "..\..\ui\HUDTrade.h"
+#include "..\..\ui\HUDTrade.h"//MTrade
 #include "..\..\ui\HUDActionUI.h"
 #include "..\..\ui\HUDAttachments.h"
 #include "..\..\ui\HUDGeneralStore.h"
@@ -79,7 +79,8 @@ extern HUDAttachments*	hudAttm;
 extern HUDActionUI*	hudActionUI;
 extern HUDGeneralStore*	hudGeneralStore;
 extern HUDVault* hudVault;
-//extern HUDTrade* hudTrade;
+extern HUDTrade* hudTrade; //MTrade
+
 //HUDTrade* hudTrade = NULL;
 extern 	PlayerStateVars_s CurrentRig;
 //float m_Stamina = m_Stamina1;
@@ -1314,6 +1315,15 @@ BOOL obj_Player::OnDestroy()
 		SoundSys.Stop(m_sndVehicleDrive); SoundSys.Release(m_sndVehicleDrive);
 	}
 
+	if (hudTrade)//MTrade
+    {
+        if (hudTrade->plr == this)
+        {
+            hudTrade->plr = NULL;
+            hudTrade->Deactivate();
+        }
+    }
+
 	if(hudMain)
 	{
 		if(!m_CharIcon.IsUndefined())
@@ -1838,6 +1848,7 @@ void obj_Player::CheckZombiePlayer()
 						}
 					}
 				}
+
 				else if (targetObj->isObjType(OBJTYPE_Zombie))
 				{
 					obj_Zombie* targetZombie = (obj_Zombie*)targetObj;
@@ -1926,7 +1937,7 @@ void obj_Player::CheckFireWeapon()
 	if(hudAttm && hudAttm->isActive()) needExit = true;
 	if(hudGeneralStore && hudGeneralStore->isActive()) needExit = true;
 	if(hudVault && hudVault->isActive()) needExit = true;
-	//if(hudTrade && hudTrade->isActive()) needExit = true;
+	if(hudTrade && hudTrade->isActive()) needExit = true;//MTrade
 	if(Mouse->GetMouseVisibility()) needExit = true;
 	if(hudMain && hudMain->isChatInputActive()) needExit = true;
 	if(hudMain && hudMain->isPlayersListVisible()) needExit = true;
@@ -4238,27 +4249,30 @@ float dist_Point_to_Line( const r3dPoint3D& p, const r3dPoint3D& l1, const r3dPo
 
 void obj_Player::UpdateActionUI()
 {
-	R3DPROFILE_FUNCTION("UpdateActionUI");
-	r3d_assert(NetworkLocal);
-	if(hudMain==NULL || hudActionUI == NULL || hudPause == NULL ||
-		hudAttm == NULL || hudGeneralStore == NULL || hudVault == NULL /*|| hudTrade == NULL*/)
-		return;
+    R3DPROFILE_FUNCTION("UpdateActionUI");
+    r3d_assert(NetworkLocal);
+    if(hudMain==NULL || hudActionUI == NULL || hudPause == NULL ||
+        hudAttm == NULL || hudGeneralStore == NULL || hudVault == NULL || hudTrade == NULL)//MTrade
+        return;
 
-	if(hudMain->isChatInputActive())
-		return;
-	if(hudPause->isActive())
-		return;
-	if(hudAttm->isActive())
-		return;
-	if(hudGeneralStore->isActive())
-		return;
-	if(hudVault->isActive())
-		return;
+    if(hudMain->isChatInputActive())
+        return;
+    if(hudPause->isActive())
+        return;
+    if(hudAttm->isActive())
+        return;
+    if(hudGeneralStore->isActive())
+        return;
+    if(hudVault->isActive())
+        return;
+    if(hudTrade->isActive())//MTrade
+        return;
 
-	if(bDead && hudActionUI->isActive())
-		hudActionUI->Deactivate();
-	if(bDead)
-		return;
+
+    if(bDead && hudActionUI->isActive())
+        hudActionUI->Deactivate();
+    if(bDead)
+        return;
 
 	float maxDist = g_camera_mode->GetInt()==2?3.0f:4.0f;
 
@@ -4402,6 +4416,12 @@ void obj_Player::UpdateActionUI()
 				//hudActionUI->setCarInfo(0,0,0,0,0,false);
 				hudActionUI->setText(L"USE ITEM", m_Weapons[m_SelectedWeapon]->getConfig()->m_StoreNameW, InputMappingMngr->getKeyName(r3dInputMappingMngr::KS_INTERACT));
 			}
+			else if (dropObj->Class->Name == "obj_Player")//MTrade
+            {
+                obj_Player* plr = (obj_Player*)dropObj;
+                hudActionUI->setCarInfo(0,0,0,0,0,false);
+                hudActionUI->setText(L"Trade", L"Hold 'E' To Trade", InputMappingMngr->getKeyName(r3dInputMappingMngr::KS_INTERACT));
+            }
 			/*else if (plr->CurLoadout.isTrade)
 			hudActionUI->setText(L"Trade", L"Hold E To Trade Accept", InputMappingMngr->getKeyName(r3dInputMappingMngr::KS_INTERACT));*/
 			else // Trade
@@ -4537,6 +4557,34 @@ void obj_Player::UpdateActionUI()
 							hudMain->updateSlotInfo(m_Weapons[m_SelectedWeapon]->m_BackpackIdx, wi.quantity);
 					}
 				}
+
+				else if (dropObj->Class->Name == "obj_Player")//MTrade
+                {
+                    obj_Player* plr = (obj_Player*)dropObj;
+                    if (plr->CurLoadout.isTradeReq)
+                    {
+                        PKT_C2S_TradeAccept_s n;
+                        n.netId = plr->GetNetworkID();
+                        p2pSendToHost(this,&n,sizeof(n));
+
+
+                        plr->CurLoadout.isTradeReq = false;
+                        hudTrade->plr = plr;
+                        if (hudTrade->plr)
+                            hudTrade->Activate();
+                    }
+                    else
+                    {
+                        PKT_C2S_TradeRequest_s n;
+                        n.netId = (int)plr->GetNetworkID();
+                        p2pSendToHost(this,&n,sizeof(n));
+                        char msg[128];
+                        char name[128]; plr->GetUserName(name);
+                        sprintf(msg,"Sent trade request to %s",name);
+                        hudMain->addChatMessage(0,"<trade>",msg,0);
+                    }
+                }
+
 				/*else if (plr->CurLoadout.isTrade)
 				{
 				// Code
@@ -4603,6 +4651,40 @@ void obj_Player::AddBloodOnGround(const r3dPoint3D& posOfShot)
 		}
 	}
 }
+
+void obj_Player::OnNetPacket(const PKT_C2S_TradeAccept_s& n)
+{
+    GameObject* obj = GameWorld().GetNetworkObject(n.netId);
+    if (obj && obj->Class->Name == "obj_Player")
+    {
+        obj_Player* plr = (obj_Player*)obj;
+        hudTrade->plr = plr;
+        hudTrade->Activate();
+    }
+}
+//MTrade
+void obj_Player::OnNetPacket(const PKT_C2S_TradeOptoBack_s& n)
+{
+    hudTrade->OnNetPacket(n);
+}
+void obj_Player::OnNetPacket(const PKT_C2S_TradeSuccess_s& n)
+{
+    hudTrade->Deactivate();
+}
+void obj_Player::OnNetPacket(const PKT_C2S_TradeAccept2_s& n)
+{
+    hudTrade->setOppositeTradeIndicator(true);
+}
+void obj_Player::OnNetPacket(const PKT_C2S_TradeBacktoOp_s& n)
+{
+    hudTrade->OnNetPacket(n);
+}
+void obj_Player::OnNetPacket(const PKT_C2S_TradeCancel_s& n)
+{
+    hudTrade->Deactivate();
+    hudMain->addChatMessage(0,"<trade>","Other player cancelled trade",0);
+}
+//
 
 void obj_Player::OnNetPacket(const PKT_S2C_MoveTeleport_s& n)
 {
@@ -4915,6 +4997,22 @@ void obj_Player::OnNetPacket(const PKT_C2C_PlayerFired_s& n)
 	uberAnim_->StartRecoilAnim();
 }
 
+//MTrade
+void obj_Player::OnNetPacket(const PKT_C2S_TradeRequest_s& n)
+{
+    GameObject* obj = GameWorld().GetNetworkObject((DWORD)n.netId);
+    if (obj && obj->Class->Name == "obj_Player")
+    {
+        obj_Player* plr = (obj_Player*)obj;
+        char msg[64];
+        char username[64];
+        plr->GetUserName(username);
+        sprintf(msg,"Trade requested by %s",username);
+        plr->CurLoadout.isTradeReq = true;
+        hudMain->addChatMessage(0,"<trade>",msg,0);
+    }
+}
+
 void obj_Player::OnNetPacket(const PKT_C2C_PlayerHitNothing_s& n)
 {
 }
@@ -5204,6 +5302,14 @@ case xxx: { \
 		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_S2C_BackpackAddNew);
 		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_S2C_BackpackModify);
 		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_S2C_SetPlayerReputation);
+		//MTrade
+		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeCancel);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeAccept);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeBacktoOp);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeAccept2);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeOptoBack);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeSuccess);
+        DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeRequest);
 	}
 
 	return TRUE;

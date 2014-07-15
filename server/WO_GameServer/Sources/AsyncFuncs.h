@@ -215,9 +215,6 @@ class CJobTradeLog : public CAsyncApiJob
     void        OnSuccess();
 };
 
-
-
-
 class CJobHash : public CAsyncApiJob
 {
 public:
@@ -231,4 +228,6 @@ public:
 private:
 	int Result;
 };
+
+
 

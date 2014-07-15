@@ -133,6 +133,18 @@ BOOL obj_ServerPlayer::OnCreate()
 
 BOOL obj_ServerPlayer::OnDestroy()
 {
+    for (int i=0;i<72;i++)
+    {
+        TradeSlot[i] = 0;
+        TradeItems[i].Reset();    
+    }
+    Tradetargetid = 0;
+    //CloseHandle(tThread);
+    isDestroy = true;
+    isTradeAccept = false;
+    //TerminateThread(tThread,-1);
+    //gServerLogic.ResetNetObjVisData(this);
+    return parent::OnDestroy();
 	return parent::OnDestroy();
 }
 
@@ -149,6 +161,159 @@ BOOL obj_ServerPlayer::Load(const char *fname)
 	RecalcBoundBox();
 
 	return TRUE;
+}
+
+void obj_ServerPlayer::DoRemoveAllItems(obj_ServerPlayer* plr){
+    for (int i =0;i<72;i++)
+    {
+        PKT_S2C_BackpackModify_s n;
+        n.SlotTo     = i;
+        n.Quantity   = 0;
+        n.dbg_ItemID = plr->loadout_->Items[i].itemID;
+        gServerLogic.p2pSendToPeer(plr->peerId_, plr, &n, sizeof(n));
+        plr->loadout_->Items[i].Reset();
+        plr->OnBackpackChanged(i);
+    }
+}
+
+void obj_ServerPlayer::DoRemoveItems(int slotid)
+{
+	PKT_S2C_BackpackModify_s n;
+	n.SlotTo     = slotid;
+	n.Quantity   = 0;
+	n.dbg_ItemID = loadout_->Items[slotid].itemID;
+	gServerLogic.p2pSendToPeer(peerId_, this, &n, sizeof(n));
+	loadout_->Items[slotid].Reset();
+	OnBackpackChanged(slotid);
+}
+
+void obj_ServerPlayer::DoTrade(obj_ServerPlayer* plr , obj_ServerPlayer* plr2)
+{
+
+
+    //if (!plr->isTradeAccept) return;
+
+
+    if (!plr || !plr2) return;
+
+
+
+
+    r3dOutToLog("DoTrade(%s,%s)\n",plr->userName,plr2->userName);
+// check slot and weight
+    float totalTradeweight = 0;
+    bool freeWeight = false;
+    float totalTradeweight2 = 0;
+    bool freeWeight2 = false;
+    for (int i =0;i<72;i++)
+    {
+        if (plr->TradeItems[i].itemID == 0)
+            continue;
+        wiInventoryItem item = plr->TradeItems[i];
+        const BaseItemConfig* itemCfg = g_pWeaponArmory->getConfig(item.itemID);
+        if (itemCfg)
+        {
+            totalTradeweight += itemCfg->m_Weight;
+        }
+    }
+    for (int i =0;i<72;i++)
+    {
+        if (plr2->TradeItems[i].itemID == 0)
+            continue;
+        wiInventoryItem item = plr2->TradeItems[i];
+        const BaseItemConfig* itemCfg = g_pWeaponArmory->getConfig(item.itemID);
+        if (itemCfg)
+        {
+            totalTradeweight2 += itemCfg->m_Weight;
+        }
+    }
+// before trade. we need to save old Items of players.
+    wiInventoryItem Items1[72];
+    wiInventoryItem Items2[72];
+
+
+    for (int i=0; i<72;i++)
+    {
+        Items1[i].Reset();
+        Items2[i].Reset();
+        Items1[i] = plr->loadout_->Items[i];
+        Items2[i] = plr2->loadout_->Items[i];
+    }
+
+
+    bool Failed1 = false;
+    bool Failed2 = false;
+    for (int i=0; i<72;i++)
+    {
+        if (plr->TradeItems[i].itemID == 0 || plr->TradeSlot[i] == -1)
+            continue;
+
+
+        if (plr->loadout_->Items[plr->TradeSlot[i]].itemID != plr->TradeItems[i].itemID)
+            continue;
+
+
+        if (plr2->BackpackAddItem(plr->TradeItems[i]))
+        {
+            g_AsyncApiMgr->AddJob(new CJobTradeLog(plr->profile_.CustomerID,plr2->profile_.CustomerID,plr->loadout_->LoadoutID,plr2->loadout_->LoadoutID,plr->userName,plr2->userName,gServerLogic.ginfo_.gameServerId,plr->TradeItems[i]));
+            plr->DoRemoveItems(plr->TradeSlot[i]);
+        }
+        else
+            Failed2 = true;
+
+
+        plr->TradeItems[i].Reset();
+    }
+    for (int i=0; i<72;i++)
+    {
+        if (plr2->TradeItems[i].itemID == 0 || plr2->TradeSlot[i] == -1)
+            continue;
+
+
+        if (plr2->loadout_->Items[plr2->TradeSlot[i]].itemID != plr2->TradeItems[i].itemID)
+            continue;
+
+
+        if (plr->BackpackAddItem(plr2->TradeItems[i]))
+        {
+            g_AsyncApiMgr->AddJob(new CJobTradeLog(plr2->profile_.CustomerID,plr->profile_.CustomerID,plr2->loadout_->LoadoutID,plr->loadout_->LoadoutID,plr2->userName,plr->userName,gServerLogic.ginfo_.gameServerId,plr2->TradeItems[i]));
+            plr2->DoRemoveItems(plr2->TradeSlot[i]);
+        }
+        else
+            Failed1 = true;
+
+
+        plr2->TradeItems[i].Reset();
+    }
+    if (Failed1 || Failed2)
+    {
+        DoRemoveAllItems(plr);
+        DoRemoveAllItems(plr2);
+
+
+        for (int i=0;i<72;i++)
+        {
+            if (Items1[i].itemID != 0)
+                plr->BackpackAddItem(Items1[i]);
+
+
+            if (Items2[i].itemID != 0)
+                plr2->BackpackAddItem(Items2[i]);
+        }
+
+
+        char chatmessage[128] = {0};
+        PKT_C2C_ChatMessage_s n;
+        sprintf(chatmessage, "Other player does not have enough free backpack slots");
+        r3dscpy(n.gamertag, "<Trade>");
+        r3dscpy(n.msg, chatmessage);
+        n.msgChannel = 0;
+        n.userFlag = 0;
+        gServerLogic.p2pSendRawToPeer(plr->peerId_,&n,sizeof(n));
+        gServerLogic.p2pSendRawToPeer(plr2->peerId_,&n,sizeof(n));
+    }
+    gServerLogic.ApiPlayerUpdateChar(plr2);
+    gServerLogic.ApiPlayerUpdateChar(plr);
 }
 
 void obj_ServerPlayer::SetProfile(const CServerUserProfile& in_profile)
@@ -616,6 +781,42 @@ BOOL obj_ServerPlayer::Update()
 
 
 	// pereodically update network objects visibility
+
+	if (isTradeAccept)
+    {
+        GameObject* obj = GameWorld().GetNetworkObject(Tradetargetid);
+        if (IsServerPlayer(obj))
+        {
+            obj_ServerPlayer* plr = (obj_ServerPlayer*)obj;
+            if (plr)
+            {
+                if (plr->isTradeAccept && isTradeAccept && plr->Tradetargetid == GetNetworkID() && Tradetargetid == plr->GetNetworkID() && plr != this && plr->Tradetargetid != 0 && Tradetargetid != 0)
+                {
+                    // start tradeing..
+                    this->DoTrade(this,plr);
+
+
+                    // trade finished 
+                    for (int i=0;i<72;i++)
+                    {
+                        this->TradeSlot[i] = 0;
+                        this->TradeItems[i].Reset();
+                        plr->TradeSlot[i] = 0;
+                        plr->TradeItems[i].Reset();    
+                    }
+
+
+                    this->Tradetargetid = 0;
+                    plr->Tradetargetid = 0;
+                    this->isTradeAccept = false;
+                    plr->isTradeAccept = false;
+                    PKT_C2S_TradeSuccess_s n;
+                    gServerLogic.p2pSendToPeer(plr->peerId_,plr,&n,sizeof(n));
+                    gServerLogic.p2pSendToPeer(peerId_,this,&n,sizeof(n));
+                }
+            }
+        }
+    }
 
 	if(curTime > lastVisUpdateTime_ + 10.0f)
 	{
@@ -1507,6 +1708,47 @@ void obj_ServerPlayer::OnNetPacket(const PKT_C2C_PacketBarrier_s& n)
 	// reset move cheat detection
 	moveInited = false;
 }
+
+void obj_ServerPlayer::OnNetPacket(const PKT_C2S_TradeAccept_s& n)
+{
+    GameObject* targetObj = GameWorld().GetNetworkObject((DWORD)n.netId);
+
+
+    for (int i=0;i<72;i++)
+    {
+        this->TradeItems[i].Reset();
+        this->isTradeAccept = false;
+        this->TradeSlot[i] = -1;
+    }
+
+
+    Tradetargetid = (DWORD)n.netId;
+
+
+    TradeNums = 0;
+
+
+    if (targetObj && IsServerPlayer(targetObj))
+    {
+        obj_ServerPlayer * plr = (obj_ServerPlayer*)targetObj;
+
+
+        plr->TradeNums = 0;
+        plr->Tradetargetid = GetNetworkID();
+
+
+        for (int i=0;i<72;i++)
+        {
+            plr->TradeItems[i].Reset();
+            plr->isTradeAccept = false;
+            plr->TradeSlot[i] = -1;
+        }
+        PKT_C2S_TradeAccept_s n1;
+        n1.netId = this->GetNetworkID();
+        gServerLogic.p2pSendToPeer(plr->peerId_,plr,&n1,sizeof(n));
+    }
+}
+
 void obj_ServerPlayer::OnNetPacket(const PKT_C2S_CarKill_s& n)
 {
 	GameObject* target = GameWorld().GetNetworkObject(n.targetId);
@@ -3150,6 +3392,199 @@ void obj_ServerPlayer::OnNetPacket(const PKT_C2S_WpnLog_s& n)
 
 }
 
+void obj_ServerPlayer::OnNetPacket(const PKT_C2S_TradeCancel_s& n)
+{
+    GameObject* targetObj = GameWorld().GetNetworkObject((DWORD)n.netId);
+    if (targetObj)
+    {
+        if (!IsServerPlayer(targetObj))
+        {
+            gServerLogic.LogCheat(peerId_,99,true,"Trade","not player!");
+            return;
+        }
+        obj_ServerPlayer* tplr = (obj_ServerPlayer*)targetObj;
+        for (int i=0;i<72;i++)
+        {
+            tplr->TradeItems[i].Reset();
+            tplr->isTradeAccept = false;
+            tplr->TradeSlot[i] = -1;
+        }
+        PKT_C2S_TradeCancel_s n1;
+        gServerLogic.p2pSendToPeer(tplr->peerId_,tplr,&n1,sizeof(n1));
+    }
+    for (int i=0;i<72;i++)
+    {
+        this->TradeItems[i].Reset();
+        this->isTradeAccept = false;
+        this->TradeSlot[i] = -1;
+    }
+}
+void obj_ServerPlayer::OnNetPacket(const PKT_C2S_TradeOptoBack_s& n)
+{
+    if (isTradeAccept) 
+    {
+        gServerLogic.LogCheat(peerId_, PKT_S2C_CheatWarning_s::CHEAT_Data, true, "isTradeAccept");
+        return;
+    }
+
+
+    GameObject* targetObj = GameWorld().GetNetworkObject((DWORD)n.netId);
+    if (targetObj)
+    {
+        if (!IsServerPlayer(targetObj))
+        {
+            gServerLogic.LogCheat(peerId_,99,true,"Trade","not player!");
+            return;
+        }
+
+
+        r3dOutToLog("Trade: OptoBack %s ItemID %d\n",userName,n.Item.itemID);
+        //TradeItems[TradeNums].Reset();
+        //TradeSlot[TradeNums] = -1;
+
+
+        //if (TradeNums > 0)
+        // TradeNums--;
+
+
+        GameObject* obj = GameWorld().GetNetworkObject(Tradetargetid);
+        if (IsServerPlayer(obj))
+        {
+            obj_ServerPlayer* plr = (obj_ServerPlayer*)obj;
+            if (plr && plr->isTradeAccept)
+            {
+                plr->isTradeAccept = false;
+                for (int i=0;i<72;i++)
+                {
+                    plr->TradeItems[i].Reset();
+                    plr->TradeSlot[i] = -1;
+                }
+            }
+        }
+
+
+        isTradeAccept = false;
+        for (int i=0;i<72;i++)
+        {
+            TradeItems[i].Reset();
+            TradeSlot[i] = -1;
+        }
+
+
+        obj_ServerPlayer* tplr = (obj_ServerPlayer*)targetObj;
+        PKT_C2S_TradeOptoBack_s n1;
+        n1.Item = n.Item;
+        n1.slotfrom = n.slotfrom;
+        gServerLogic.p2pSendToPeer(tplr->peerId_,tplr,&n1,sizeof(n1));
+    }
+}
+void obj_ServerPlayer::OnNetPacket(const PKT_C2S_TradeBacktoOp_s& n)
+{
+    if (isTradeAccept) 
+    {
+        gServerLogic.LogCheat(peerId_, PKT_S2C_CheatWarning_s::CHEAT_Data, true, "isTradeAccept");
+        return;
+    }
+
+
+    GameObject* targetObj = GameWorld().GetNetworkObject((DWORD)n.netId);
+    if (targetObj)
+    {
+        if (!IsServerPlayer(targetObj))
+        {
+            gServerLogic.LogCheat(peerId_,99,true,"Trade","not player!");
+            return;
+        }
+
+
+        r3dOutToLog("Trade: BackToOp %s ItemID %d\n",userName,n.Item.itemID);
+
+
+        //TradeItems[TradeNums].Reset();
+        //TradeItems[TradeNums] = n.Item;
+        //TradeSlot[TradeNums] = n.slotto;
+        //TradeNums++;
+
+
+        GameObject* obj = GameWorld().GetNetworkObject(Tradetargetid);
+        if (IsServerPlayer(obj))
+        {
+            obj_ServerPlayer* plr = (obj_ServerPlayer*)obj;
+            if (plr && plr->isTradeAccept)
+            {
+                plr->isTradeAccept = false;
+                for (int i=0;i<72;i++)
+                {
+                    plr->TradeItems[i].Reset();
+                    plr->TradeSlot[i] = -1;
+                }
+            }
+        }
+
+
+        isTradeAccept = false;
+        for (int i=0;i<72;i++)
+        {
+            TradeItems[i].Reset();
+            TradeSlot[i] = -1;
+        }
+
+
+        obj_ServerPlayer* tplr = (obj_ServerPlayer*)targetObj;
+        PKT_C2S_TradeBacktoOp_s n1;
+        n1.Item = n.Item;
+        n1.slotto = n.slotto;
+        gServerLogic.p2pSendToPeer(tplr->peerId_,tplr,&n1,sizeof(n1));
+    }
+}
+void obj_ServerPlayer::OnNetPacket(const PKT_C2S_TradeRequest_s& n)
+{
+    GameObject* targetObj = GameWorld().GetNetworkObject((DWORD)n.netId);
+    if (targetObj)
+    {
+        if (!IsServerPlayer(targetObj))
+        {
+            gServerLogic.LogCheat(peerId_,99,true,"Trade","not player!");
+            return;
+        }
+        obj_ServerPlayer* tplr = (obj_ServerPlayer*)targetObj;
+        PKT_C2S_TradeRequest_s n1;
+        n1.netId = (int)this->GetNetworkID();
+        gServerLogic.p2pSendToPeer(tplr->peerId_,tplr,&n1,sizeof(n1));
+    }
+}
+void obj_ServerPlayer::OnNetPacket(const PKT_C2S_TradeAccept2_s& n)
+{
+    // stored data
+
+
+    if (isTradeAccept) 
+    {
+        gServerLogic.LogCheat(peerId_, PKT_S2C_CheatWarning_s::CHEAT_Data, true, "isTradeAccept");
+        return;
+    }
+
+
+    for (int i=0;i<72; i++)
+    {
+        TradeItems[i] = n.Item[i];
+        TradeSlot[i] = n.slot[i];
+    }
+
+
+    this->Tradetargetid = (DWORD)n.netId;
+    this->isTradeAccept = true;
+    // the trading will start in Update() now we will wait a other player
+
+
+    GameObject* targetObj = GameWorld().GetNetworkObject((DWORD)n.netId);
+    if (targetObj && IsServerPlayer(targetObj))
+    {
+        obj_ServerPlayer * plr = (obj_ServerPlayer*)targetObj;
+        PKT_C2S_TradeAccept2_s n1;
+        gServerLogic.p2pSendToPeer(plr->peerId_,plr,&n1,sizeof(n1));
+    }
+}
 
 void obj_ServerPlayer::OnNetPacket(const PKT_C2S_PlayerWeapDataRep_s& n)
 {
@@ -3320,6 +3755,12 @@ BOOL obj_ServerPlayer::OnNetReceive(DWORD EventID, const void* packetData, int p
 		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_SendHelpCall);
 		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_HackShieldLog);
 		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_BulletValidateConfig);
+		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeAccept);
+		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeCancel);
+		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeOptoBack);
+		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeRequest);
+		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeAccept2);
+		DEFINE_GAMEOBJ_PACKET_HANDLER(PKT_C2S_TradeBacktoOp);
 	}
 
 	return FALSE;

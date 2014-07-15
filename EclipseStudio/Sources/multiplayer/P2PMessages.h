@@ -48,6 +48,16 @@ enum pkttype_e
 
   PKT_C2S_BulletValidateConfig, // for check cheats.
 
+  //MTrade
+  PKT_C2S_TradeAccept2,
+  PKT_C2S_TradeCancel,
+  PKT_C2S_TradeBackToOp,
+  PKT_C2S_TradeRequest,
+  PKT_C2S_TradeOptoBack,
+  PKT_C2S_TradeBacktoOp,
+  PKT_C2S_TradeAccept,
+  PKT_C2S_TradeSuccess,
+
 PKT_C2S_WpnLog,
 PKT_C2S_PlayerState,
 //PKT_C2C_GroupJoin,
@@ -144,8 +154,8 @@ PKT_C2C_CarSpeed,
   PKT_C2S_FallingDamage,	// player fell
 
   PKT_S2C_Damage,
-   PKT_C2S_TradeRequest,
-   PKT_C2S_TradeRequestRead,
+ //  PKT_C2S_TradeRequest,
+ //  PKT_C2S_TradeRequestRead,
   PKT_S2C_KillPlayer,
 
    PKT_S2C_SendGroupInvite,
@@ -459,6 +469,48 @@ struct PKT_S2C_MoveTeleport_s : public DefaultPacketMixin<PKT_S2C_MoveTeleport>
 {
 	r3dPoint3D	teleport_pos; // don't forget to PKT_C2C_PacketBarrier ir
 };
+//MTrade
+struct PKT_C2S_TradeBackToOp_s : public DefaultPacketMixin<PKT_C2S_TradeBackToOp>
+{
+    int slotto;
+    int slotfrom;
+    wiInventoryItem    Item;
+};
+struct PKT_C2S_TradeCancel_s : public DefaultPacketMixin<PKT_C2S_TradeCancel>
+{
+    int netId;
+};
+struct PKT_C2S_TradeAccept_s : public DefaultPacketMixin<PKT_C2S_TradeAccept>
+{
+    int netId;
+};
+struct PKT_C2S_TradeBacktoOp_s : public DefaultPacketMixin<PKT_C2S_TradeBacktoOp>
+{
+    int netId;
+    wiInventoryItem    Item;
+    int slotto;
+};
+struct PKT_C2S_TradeOptoBack_s : public DefaultPacketMixin<PKT_C2S_TradeOptoBack>
+{
+    int netId;
+    wiInventoryItem    Item;
+    int slotfrom;
+};
+struct PKT_C2S_TradeAccept2_s : public DefaultPacketMixin<PKT_C2S_TradeAccept2>
+{
+    wiInventoryItem    Item[72];
+    int netId;
+    int slot[72];
+};
+struct PKT_C2S_TradeSuccess_s : public DefaultPacketMixin<PKT_C2S_TradeSuccess>
+{
+};
+struct PKT_C2S_TradeRequest_s : public DefaultPacketMixin<PKT_C2S_TradeRequest>
+{
+    int netId;
+};
+
+
 struct PKT_C2S_CarMove_s : public DefaultPacketMixin<PKT_C2S_CarMove>
 {
 	r3dPoint3D	pos;
@@ -842,7 +894,7 @@ struct PKT_C2S_Temp_Damage_s : public DefaultPacketMixin<PKT_C2S_Temp_Damage>
 struct PKT_C2S_FallingDamage_s : public DefaultPacketMixin<PKT_C2S_FallingDamage>
 {
 	float		damage;
-};
+};/*
 struct PKT_C2S_TradeRequestRead_s : public DefaultPacketMixin<PKT_C2S_TradeRequestRead>
 {
 char		gamertag[128];
@@ -850,7 +902,7 @@ char		gamertag[128];
 struct PKT_C2S_TradeRequest_s : public DefaultPacketMixin<PKT_C2S_TradeRequest>
 {
 	DWORD netID;
-};
+};*/
 struct PKT_S2C_Damage_s : public DefaultPacketMixin<PKT_S2C_Damage>
 {
 	r3dPoint3D	dmgPos; // position of the damage. for bullets: player position. for grenades\mines\rpg - position of explosion

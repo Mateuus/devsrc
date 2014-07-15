@@ -232,6 +232,7 @@ struct wiCharDataFull
 
 	// current game data
 	int		GameMapId;
+	bool isTradeReq;//MTrade
 char		fromgamertag[128];
 char		groupgamertag[128];
 	bool isInvite;

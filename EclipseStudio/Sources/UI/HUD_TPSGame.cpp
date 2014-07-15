@@ -27,7 +27,7 @@
 #include "UI\HUDGeneralStore.h"
 #include "UI\HUDVault.h"
 #include "UI\HUDCraft.h"
-//#include "UI\HUDTrade.h"
+#include "UI\HUDTrade.h"//MTrade
 
 #include "..\GameEngine\gameobjects\obj_Vehicle.h"
 
@@ -46,7 +46,7 @@ HUDActionUI*	hudActionUI = NULL;
 HUDGeneralStore* hudGeneralStore = NULL;
 HUDVault* hudVault = NULL;
 HUDCraft* hudCraft = NULL;
-//HUDTrade* hudTrade = NULL;
+HUDTrade* hudTrade = NULL;//MTrade
 
 static float LastHSLog;
 #define VEHICLE_CINEMATIC_MODE 0
@@ -123,7 +123,7 @@ void TPSGameHUD_OnStartGame()
 	hudGeneralStore = new HUDGeneralStore();
 	hudVault = new HUDVault();
 	hudCraft = new HUDCraft();
-	//hudTrade = new HUDTrade();
+	hudTrade = new HUDTrade();//MTrade
 
 	isDi = false;
 	swimt = 0.0f;
@@ -134,7 +134,7 @@ void TPSGameHUD_OnStartGame()
 	hudGeneralStore->Init();
 	hudVault->Init();
 	hudCraft->Init();
-	//hudTrade->Init();
+	hudTrade->Init();//MTrade
 
 	Mouse->Hide(true);
 	// lock mouse to a window when playing a game
@@ -164,7 +164,7 @@ void TPSGameHUD :: DestroyPure()
 		hudGeneralStore->Unload();
 		hudVault->Unload();
 		hudCraft->Unload();
-		//hudTrade->Unload();
+		hudTrade->Unload();//MTrade
 
 		SAFE_DELETE(hudMain);
 		SAFE_DELETE(hudPause);
@@ -173,7 +173,7 @@ void TPSGameHUD :: DestroyPure()
 		SAFE_DELETE(hudGeneralStore);
 		SAFE_DELETE(hudVault);
 		SAFE_DELETE(hudCraft);
-		//SAFE_DELETE(hudTrade);
+		SAFE_DELETE(hudTrade);//MTrade
 	}
 }
 
@@ -827,8 +827,8 @@ void TPSGameHUD :: SetCameraPure ( r3dCamera &Cam)
 		return;
 	if(hudCraft->isActive())
 		return;
-	//if(hudTrade->isActive())
-	//	return;
+	if(hudTrade->isActive())//MTrade
+		return;
 
 	int mMX=Mouse->m_MouseMoveX, mMY=Mouse->m_MouseMoveY;
 	if(g_vertical_look->GetBool()) // invert mouse
@@ -1031,6 +1031,24 @@ static void DrawMenus()
 		return;
 	}
 
+	if(hudTrade->isActive())//MTrade
+    {
+        r3dMouse::Show(); // make sure that mouse is visible
+
+
+        R3DPROFILE_START( "hudTrade->" );
+
+
+        hudTrade->Update();
+        hudTrade->Draw();
+
+
+        R3DPROFILE_END( "hudTrade->" );
+
+
+        return;
+    }
+
 	if(hudGeneralStore->isActive())
 	{
 		r3dMouse::Show(); // make sure that mouse is visible
@@ -1191,7 +1209,7 @@ static void DrawMenus()
 
 			if(!pl->bDead && (r3dGetTime() - pl->TimeOfLastRespawn)>300.0f && !hudAttm->isActive() &&
 				!hudPause->isActive() && !hudActionUI->isActive() && !hudGeneralStore->isActive() &&
-				!hudVault->isActive())
+				!hudVault->isActive() && !hudTrade->isActive())//MTrade
 			{
 				static float nextCheck = r3dGetTime() + u_GetRandom(120.0f, 300.0f);
 				if(r3dGetTime() > nextCheck)

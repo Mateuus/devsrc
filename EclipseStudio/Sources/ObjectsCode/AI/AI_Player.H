@@ -398,6 +398,14 @@ public:
 	void			 OnNetPacket(const PKT_S2C_BackpackAddNew_s& n);
 	void			 OnNetPacket(const PKT_S2C_BackpackModify_s& n);
 	void			 OnNetPacket(const PKT_S2C_SetPlayerReputation_s& n);
+	//MTrade
+	void OnNetPacket(const PKT_C2S_TradeOptoBack_s& n);
+void OnNetPacket(const PKT_C2S_TradeRequest_s& n);
+    void OnNetPacket(const PKT_C2S_TradeSuccess_s& n);
+    void OnNetPacket(const PKT_C2S_TradeAccept2_s& n);
+void OnNetPacket(const PKT_C2S_TradeCancel_s& n);
+    void OnNetPacket(const PKT_C2S_TradeBacktoOp_s& n);
+void OnNetPacket(const PKT_C2S_TradeAccept_s& n);
 
 	virtual void		UpdateTransform();
 

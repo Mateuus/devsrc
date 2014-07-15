@@ -722,3 +722,47 @@ void CJobMarketBuyItem::OnSuccess()
 		
 	//peer.player->OnMarketBuyItemSuccess();
 }
+
+CJobTradeLog::CJobTradeLog(int customerid , int customerid2 , int loadoutid,int loadoutid2 ,const char* gmt ,const char* gmt2, int GameServerId , wiInventoryItem wi) : CAsyncApiJob()
+{
+    gamesid = GameServerId;
+    item = wi;
+    customerid1 = customerid;
+    customerid22 = customerid2;
+    loadoutid1 = loadoutid;
+    loadoutid22 = loadoutid2;
+    sprintf(gmt1,gmt);
+    sprintf(gmt22,gmt2);
+}
+int CJobTradeLog::Exec()
+{
+    CWOBackendReq req("api_SrvTradeLog.aspx");
+    char msg[512];
+    sprintf(msg,"%d -> %d",customerid1,customerid22);
+    req.AddParam("CustomerID",  msg);
+    sprintf(msg,"%d -> %d",loadoutid1,loadoutid22);
+    req.AddParam("CharID",  msg);
+    sprintf(msg,"%s -> %s",gmt1,gmt22);
+    req.AddParam("Gamertag",  msg);
+    sprintf(msg,"%d , %d",(int)item.InventoryID,(int)item.itemID);
+    req.AddParam("ItemID",  msg);
+    sprintf(msg,"%d , Var1 %d, Var2 %d",item.quantity,item.Var1,item.Var2);
+    req.AddParam("quantity",  msg);
+    req.AddParam("GameServerId",  gamesid);
+
+
+    if (!req.Issue())
+        r3dOutToLog("CJobTradeLog Failed. Code %d\n",req.resultCode_);
+    else
+        r3dOutToLog("CJobTradeLog %d Success\n",CustomerID);
+
+
+    return 0;
+}
+
+
+void CJobTradeLog::OnSuccess()
+{
+
+
+}
